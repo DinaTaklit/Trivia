@@ -12,6 +12,10 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+
+
+
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
@@ -39,15 +43,15 @@ def create_app(test_config=None):
     '''
     @app.route('/categories')
     def retrive_categories(): 
-        selection = Category.query.order_by(Category.id).all()  
-        categories = [category.format() for category in selection]
-        if categories  is None or len(categories)==0: 
-            abort(404)  
+        categories = Category.query.all()
+        formatted_categories = {category.id: category.type for category in categories}
         return jsonify({
-            'success': True,
-            'categories':categories ,
-            'total_categories':len(categories)
-        })  
+                        'success': True,
+                        'categories': formatted_categories,
+                        'total_categories': len(categories)
+                    })
+
+    
         
     '''
     @TODO: 
@@ -55,13 +59,15 @@ def create_app(test_config=None):
     including pagination (every 10 questions). 
     This endpoint should return a list of questions, 
     number of total questions, current category, categories. 
-
-    TEST: At this point, when you start the application
+  
+    TEST: At this point, when you start the application 
     you should see questions and categories generated,
     ten questions per page and pagination at the bottom of the screen for three pages.
     Clicking on the page numbers should update the questions. 
     '''
+  
 
+      
     '''
     @TODO: 
     Create an endpoint to DELETE question using a question ID. 
