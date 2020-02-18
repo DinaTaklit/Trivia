@@ -85,8 +85,7 @@ def create_app(test_config=None):
             'categories': categories       
         }) 
          
-
-    
+         
     '''
     @TODO: 
     Create an endpoint to DELETE question using a question ID. 
