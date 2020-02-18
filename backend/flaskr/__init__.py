@@ -3,6 +3,10 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
+# This was added to fix this issue => from models import setup_db, Question, Category 
+# ModuleNotFoundError: No module named 'models'
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from models import setup_db, Question, Category
 
