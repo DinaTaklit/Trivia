@@ -130,31 +130,50 @@ def create_app(test_config=None):
     '''
     @app.route('/questions', methods=['POST'])
     def create_question():
+        print("\nEntered in  the create question method\n")
         body = request.get_json()
         new_question = body.get('question', None)
         new_answer = body.get('answer', None)
         new_difficulty = body.get('difficulty', None)
         new_category = body.get('category', None)
-        
+        searchTerm = body.get('searchTerm', None)
+        print('\nThe searched terme => {}\n'.format(searchTerm))
         try: 
-            question = Question(question=new_question, answer=new_question, category=new_category, difficulty=new_difficulty)
-            question.insert()
-        
-            selection = Question.query.all()
-            current_questions = paginate_questions(request,selection) 
-            categories = {category.id: category.type for category in Category.query.all()} 
+            # Appdate the search mthod to handle the search option 
+            if searchTerm: 
+                selection = Question.query.order_by(Question.id).filter(Question.question.ilike('%{}%'.format(searchTerm)))
+                current_questions = paginate_questions(request, selection)
+                categories = {category.id: category.type for category in Category.query.all()} 
             
-            if current_questions is None or len(current_questions)==0: 
-                abort(404) 
-                                             
-            return jsonify({
-                'success': True,
-                'created': question.id,
-                'questions':current_questions,
-                'total_questions':len(selection),
-                'current_category':[],
-                'categories': categories      
-            })
+                if current_questions is None or len(current_questions)==0: 
+                    abort(404) 
+                                                            
+                return jsonify({
+                    'success': True,
+                    'questions':current_questions,
+                    'total_questions':len(selection.all()),
+                    'current_category':[],
+                    'categories': categories      
+                })
+            else: 
+                question = Question(question=new_question, answer=new_question, category=new_category, difficulty=new_difficulty)
+                question.insert()
+            
+                selection = Question.query.order_by(Question.id).all()
+                current_questions = paginate_questions(request,selection) 
+                categories = {category.id: category.type for category in Category.query.all()} 
+                
+                if current_questions is None or len(current_questions)==0: 
+                    abort(404) 
+                                                
+                return jsonify({
+                    'success': True,
+                    'created': question.id,
+                    'questions':current_questions,
+                    'total_questions':len(selection),
+                    'current_category':[],
+                    'categories': categories      
+                })
         except Exception as error: 
             print("\nerror => {}\n".format(error)) 
             abort(422)
@@ -169,6 +188,8 @@ def create_app(test_config=None):
     only question that include that string within their question. 
     Try using the word "title" to start. 
     '''
+    # This is done along with create new question 
+    
 
     '''
     @TODO: 
