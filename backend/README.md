@@ -35,6 +35,15 @@ With Postgres running, restore a database using the trivia.psql file provided. F
 ```bash
 psql trivia < trivia.psql
 ```
+>Ps: In case the previous command does not work just process like this:
+- First create the database "trivia": 
+    ```
+    CREATE DATABASE trivia OWNER name_of_owner
+    ```
+- Populate the trivia database using `trivia.psql` script 
+    ```  
+    psql -d trivia -U db_onwner -a -f trivia.psql
+    ```
 
 ## Running the server
 
@@ -98,3 +107,17 @@ createdb trivia_test
 psql trivia_test < trivia.psql
 python test_flaskr.py
 ```
+>PS: if the command avbove does not work just process like this:
+
+- First create the database of the test: 
+    ```
+    CREATE DATABASE trivia_test OWNER name_of_owner
+    ```
+- Populate the trivia_test database using `trivia.psql` script 
+    ```  
+    psql -d trivia_test -U db_onwner -a -f trivia.psql
+    ```
+- To run the test type: 
+    ```
+    python test_flaskr.py
+    ``` 
