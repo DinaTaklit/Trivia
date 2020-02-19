@@ -237,14 +237,11 @@ def create_app(test_config=None):
             if category.get('id') == 0: 
                 selection = Question.query.all()
             else:
-                print('\ncategory.get(id) => {}\n'.format(category.get('id')))
-                print('\nprevious_question=> {}\n'.format(previous_questions))
                 selection = Question.query.filter(Question.category == category.get('id')).all()
                      
             if selection is None: 
                 abort(404)
             # edge case - no questions in selected category  
-            print('len(selection)'.format(len(selection)))
             if len(selection) == 0: 
                 return jsonify({
                     'question': None
