@@ -73,7 +73,6 @@ def create_app(test_config=None):
         selection = Question.query.order_by(Question.category, Question.id).all()
         current_questions = paginate_questions(request,selection) 
         categories = {category.id: category.type for category in Category.query.all()} 
-        
         if current_questions is None or len(current_questions)==0: 
             abort(404)  
                
@@ -81,7 +80,6 @@ def create_app(test_config=None):
             'success': True,
             'questions':current_questions,
             'total_questions':len(selection),
-            'current_category':[],
             'categories': categories       
         }) 
                       
@@ -99,20 +97,10 @@ def create_app(test_config=None):
             if question is None:
                 abort(404)
             question.delete()
-            selection = Question.query.all()
-            current_questions = paginate_questions(request,selection) 
-            categories = {category.id: category.type for category in Category.query.all()} 
-            
-            if current_questions is None or len(current_questions)==0: 
-                abort(404) 
                                              
             return jsonify({
                 'success': True,
-                'deleted': question_id,
-                'questions':current_questions,
-                'total_questions':len(selection),
-                'current_category':[],
-            'categories': categories      
+                'deleted': question_id,   
             })
         except Exception as error:
             print("\nerror => {}\n".format(error))
@@ -141,36 +129,20 @@ def create_app(test_config=None):
             if searchTerm: 
                 selection = Question.query.order_by(Question.id).filter(Question.question.ilike('%{}%'.format(searchTerm)))
                 current_questions = paginate_questions(request, selection)
-                categories = {category.id: category.type for category in Category.query.all()} 
-            
                 if current_questions is None or len(current_questions)==0: 
                     abort(404) 
                                                             
                 return jsonify({
                     'success': True,
                     'questions':current_questions,
-                    'total_questions':len(selection.all()),
-                    'current_category':[],
-                    'categories': categories      
+                    'total_questions':len(selection.all()) 
                 })
             else: 
                 question = Question(question=new_question, answer=new_question, category=new_category, difficulty=new_difficulty)
-                question.insert()
-            
-                selection = Question.query.order_by(Question.id).all()
-                current_questions = paginate_questions(request,selection) 
-                categories = {category.id: category.type for category in Category.query.all()} 
-                
-                if current_questions is None or len(current_questions)==0: 
-                    abort(404) 
-                                                
+                question.insert()                                              
                 return jsonify({
                     'success': True,
-                    'created': question.id,
-                    'questions':current_questions,
-                    'total_questions':len(selection),
-                    'current_category':[],
-                    'categories': categories      
+                    'created': question.id   
                 })
         except Exception as error: 
             print("\nerror => {}\n".format(error)) 
@@ -203,14 +175,12 @@ def create_app(test_config=None):
         if selection is None or len(selection)==0: 
             abort(404)  
             
-        current_questions = paginate_questions(request,selection) 
-        categories = {category.id: category.type for category in Category.query.all()}     
+        current_questions = paginate_questions(request,selection)    
         return jsonify({
             'success': True,
             'questions':current_questions,
             'total_questions':len(selection),
-            'current_category':category_id,
-            'categories': categories       
+            'current_category':category_id    
         }) 
 
     '''
