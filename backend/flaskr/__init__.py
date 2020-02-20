@@ -130,14 +130,12 @@ def create_app(test_config=None):
     '''
     @app.route('/questions', methods=['POST'])
     def create_question():
-        print("\nEntered in  the create question method\n")
         body = request.get_json()
         new_question = body.get('question', None)
         new_answer = body.get('answer', None)
         new_difficulty = body.get('difficulty', None)
         new_category = body.get('category', None)
         searchTerm = body.get('searchTerm', None)
-        print('\nThe searched terme => {}\n'.format(searchTerm))
         try: 
             # Appdate the search mthod to handle the search option 
             if searchTerm: 
