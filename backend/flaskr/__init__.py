@@ -132,39 +132,38 @@ def create_app(test_config=None):
         new_difficulty = body.get('difficulty', None)
         new_category = body.get('category', None)
         searchTerm = body.get('searchTerm', None)
-        try: 
-            # Appdate the search mthod to handle the search option 
-            if searchTerm: 
-                # Get all the question that contains the searched term including pagination
-                selection = Question.query.order_by(Question.id).filter(Question.question.ilike('%{}%'.format(searchTerm)))
-                current_questions = paginate_questions(request, selection)
-                
-                if current_questions is None or len(current_questions)==0: 
-                    abort(404) 
-                                                            
-                return jsonify({
-                    'success': True,
-                    'questions':current_questions,
-                    'total_questions':len(selection.all()) 
-                })
-            else: 
+        # Appdate the search mthod to handle the search option 
+        if searchTerm: 
+            # Get all the question that contains the searched term including pagination
+            selection = Question.query.order_by(Question.id).filter(Question.question.ilike('%{}%'.format(searchTerm)))
+            current_questions = paginate_questions(request, selection)
+            if current_questions is None or len(current_questions)==0: 
+                abort(404)                              
+            return jsonify({
+                'success': True,
+                'questions':current_questions,
+                'total_questions':len(selection.all()) 
+            })
+        else: 
+            try: 
                 # If there is no search Term insert the new posted question
                 question = Question(question=new_question, answer=new_question, category=new_category, difficulty=new_difficulty)
                 question.insert()    
-                                                          
+                                                                   
                 return jsonify({
                     'success': True,
                     'created': question.id   
                 })
-        except Exception as error: 
-            print("\nerror => {}\n".format(error)) 
-            abort(422)
+            except Exception as error: 
+                print("\nerror => {}\n".format(error)) 
+                abort(422)
             
     '''
     @TODO: 
     Create a POST endpoint to get questions based on a search term. 
     It should return any questions for whom the search term 
-    is a substring of the question. 
+    is a su
+    bstring of the question. 
 
     TEST: Search by any phrase. The questions list will update to include 
     only question that include that string within their question. 
