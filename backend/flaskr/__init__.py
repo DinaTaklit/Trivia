@@ -3,6 +3,7 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
+
 # This was added to fix this issue => from models import setup_db, Question, Category 
 # ModuleNotFoundError: No module named 'models'
 import sys
@@ -17,6 +18,7 @@ def paginate_questions(request, selection):
     page = request.args.get('page', 1, type=int)
     start = (page - 1) * QUESTIONS_PER_PAGE
     end = start + QUESTIONS_PER_PAGE
+    #Return the questions in the formmated and parse them by page
     questions = [question.format() for question in selection]
     current_questions = questions[start:end]
     return current_questions
@@ -49,6 +51,7 @@ def create_app(test_config=None):
     @app.route('/categories')
     def retrive_categories(): 
         categories = Category.query.all()
+        # Format the categories in the required format
         formatted_categories = {category.id: category.type for category in categories}
         return jsonify({
                         'success': True,
@@ -73,6 +76,7 @@ def create_app(test_config=None):
         selection = Question.query.order_by(Question.category, Question.id).all()
         current_questions = paginate_questions(request,selection) 
         categories = {category.id: category.type for category in Category.query.all()} 
+        
         if current_questions is None or len(current_questions)==0: 
             abort(404)  
                
@@ -94,8 +98,10 @@ def create_app(test_config=None):
     def delete_question(question_id):
         try:
             question = Question.query.filter(Question.id == question_id).one_or_none()
+            
             if question is None:
                 abort(404)
+                
             question.delete()
                                              
             return jsonify({
@@ -127,8 +133,10 @@ def create_app(test_config=None):
         try: 
             # Appdate the search mthod to handle the search option 
             if searchTerm: 
+                # Get all the question that contains the searched term including pagination
                 selection = Question.query.order_by(Question.id).filter(Question.question.ilike('%{}%'.format(searchTerm)))
                 current_questions = paginate_questions(request, selection)
+                
                 if current_questions is None or len(current_questions)==0: 
                     abort(404) 
                                                             
@@ -138,8 +146,10 @@ def create_app(test_config=None):
                     'total_questions':len(selection.all()) 
                 })
             else: 
+                # If there is no search Term insert the new posted question
                 question = Question(question=new_question, answer=new_question, category=new_category, difficulty=new_difficulty)
-                question.insert()                                              
+                question.insert()    
+                                                          
                 return jsonify({
                     'success': True,
                     'created': question.id   
@@ -232,6 +242,7 @@ def create_app(test_config=None):
         except Exception as error: 
             print("\nerror => {}\n".format(error)) 
             abort(422)
+            
             
     '''
     @TODO: 
