@@ -18,7 +18,25 @@ class TriviaTestCase(unittest.TestCase):
         #self.database_path = "postgres://{}/{}".format('localhost:5432', self.database_name)
         self.database_path = "postgres://{}:{}@{}/{}".format('dina','dina','localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
-
+        
+        # Use it to test the creation of new question 
+        self.question = {
+            'question': 'Who discovered penicillin?',
+            'answer': 'Alexander Fleming', 
+            'category': 1, 
+            'difficulty': 3, 
+        }
+        # User it to get a question to play the quiz 
+        self.quiz = {
+            'Previous_questions': [16,18],
+            'quiz_category':{
+                'id': 2
+            }
+        }
+        self.quiz_2 = {
+            'previous_questions': []
+        }
+        
         # binds the app to the current context
         with self.app.app_context():
             self.db = SQLAlchemy()
@@ -34,6 +52,29 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
+    
+    """
+    TODO
+    Test Get categories in both case success and faillure
+    """
+    def test_get_categories(self):
+        res = self.client().get('/categories')
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(len(data['categories']))
+        self.assertTrue(data['total_categories'])               
+     
+    def test_404_no_categories_found(self):
+        res = self.client().get('/categories')
+        data = json.loads(res.data)   
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'resource not found')   
+    """
+    TODO
+    Test Get questions success and fail case 
+    """
     def test_get_paginated_questions(self):
         res = self.client().get('/questions')
         data = json.loads(res.data)
@@ -41,7 +82,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['questions']))
         self.assertTrue(data['total_questions'])
-        self.assertEqual(len(data['current_category']), 0)
         self.assertTrue(len(data['categories']))
 
     #test retrive books requesting beyon valid page
@@ -51,6 +91,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'resource not found')  
+
 
 
 # Make the tests conveniently executable
