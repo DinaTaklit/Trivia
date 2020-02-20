@@ -123,6 +123,13 @@ The API will return four(04) error types when requests fail:
   
 ## Endpoints 
 
+GET '/categories'
+GET '/questions'
+GET '/categories/{category_id}/questions' 
+DELETE '/questions/{question_id}' 
+POST '/questions'
+POST /quizzes
+
 ### GET /categories
 
 - General:
