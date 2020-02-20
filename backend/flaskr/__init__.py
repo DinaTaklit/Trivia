@@ -52,6 +52,8 @@ def create_app(test_config=None):
     def retrive_categories(): 
         categories = Category.query.all()
         # Format the categories in the required format
+        if categories is None or len(categories)==0:
+            abort(404)
         formatted_categories = {category.id: category.type for category in categories}
         return jsonify({
                         'success': True,
