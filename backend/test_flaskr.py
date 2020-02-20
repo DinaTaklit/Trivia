@@ -20,7 +20,7 @@ class TriviaTestCase(unittest.TestCase):
         setup_db(self.app, self.database_path)
         
         # Use it to test the creation of new question 
-        self.question = {
+        self.new_question = {
             'question': 'Who discovered penicillin?',
             'answer': 'Alexander Fleming', 
             'category': 1, 
@@ -112,6 +112,51 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'],'unprocessable')
+        
+    """
+    TODO
+    Test Create question success and fail case 
+    """
+    def test_create_new_question(self):
+        res =  self.client().post('/questions', json=self.new_question)
+        data = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['created'])
+
+    def test_405_if_question_creation_not_allowed(self):
+        res = self.client().post('/questions/45', json=self.new_question)
+        data = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'method not allowed')
+        
+
+    """
+    TODO
+    Test search questions with searchTerm success and fail case 
+    """
+
+    def test_get_questions_search_with_results(self):
+        res = self.client().post('/questions', json={'searchTerm':'the'})
+        data = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['total_questions'])
+        self.assertTrue(len(data['questions']))
+    
+    def test_get_questions_search_without_results(self):
+        res = self.client().post('/questions', json={'searchTerm':'dina'})
+        data = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'resource not found')  
+    
+    
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
