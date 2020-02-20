@@ -28,7 +28,7 @@ class TriviaTestCase(unittest.TestCase):
         }
         # User it to get a question to play the quiz 
         self.quiz = {
-            'Previous_questions': [16,18],
+            'previous_questions': [16,18],
             'quiz_category':{
                 'id': 2
             }
@@ -175,7 +175,26 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'resource not found')  
-
+    
+    """
+    TODO
+    Test get question for quiz success and fail case 
+    """
+    def test_get_question_for_quiz(self):
+        res =  self.client().post('/quizzes', json=self.quiz)
+        data = json.loads(res.data)
+         
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['question'])
+    
+    def test_422_get_question_for_quiz_for_none_category_given(self):
+        res =  self.client().post('/quizzes', json=self.quiz_2)
+        data = json.loads(res.data)
+                
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'],'unprocessable')
     
 # Make the tests conveniently executable
 if __name__ == "__main__":

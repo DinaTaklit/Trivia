@@ -207,7 +207,7 @@ def create_app(test_config=None):
     '''
     
     @app.route('/quizzes', methods=['POST'])
-    def play_quiz():
+    def get_question_for_quiz():
         body = request.get_json()
         category = body.get('quiz_category',None)
         previous_questions = body.get('previous_questions', None)
@@ -218,10 +218,8 @@ def create_app(test_config=None):
             else:
                 selection = Question.query.filter(Question.category == category.get('id')).all()
                      
-            if selection is None: 
-                abort(404)
             # edge case - no questions in selected category  
-            if len(selection) == 0: 
+            if selection is None or len(selection) == 0: 
                 return jsonify({
                     'question': None
                 })  
